@@ -205,7 +205,7 @@ function initWhatsAppWidget() {
   if (!whatsappBtn) return;
 
   whatsappBtn.addEventListener('click', () => {
-    const phoneNumber = '919999999999'; // Standard Indian placeholder number matching +91 format
+    const phoneNumber = '918179459896'; // SAFETECH WORKWEAR contact number
     const textMessage = encodeURIComponent("Hello SAFETECH WORKWEAR team, I visited your website and would like to inquire about industrial safety garments and workwear solutions.");
     const url = `https://wa.me/${phoneNumber}?text=${textMessage}`;
     window.open(url, '_blank');
