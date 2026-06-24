@@ -31,6 +31,10 @@
   <!-- Custom Styling -->
   <link rel="stylesheet" href="styles.css">
 
+  <!-- Preload critical above-the-fold images -->
+  <link rel="preload" as="image" href="images/logo.png" fetchpriority="high">
+  <link rel="preload" as="image" href="images/Screenshot 2026-06-24 172118.png" fetchpriority="high">
+
 
   <!-- Resource hints for faster CDN loading -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -71,7 +75,7 @@
   <header>
     <div class="container">
       <a href="#home" class="logo-img-wrapper">
-        <img src="images/logo.png" alt="SAFETECH WORKWEAR Logo" class="header-logo-img">
+        <img src="images/logo.png" alt="SAFETECH WORKWEAR Logo" class="header-logo-img img-smooth" width="180" height="48" decoding="async" fetchpriority="high">
       </a>
 
       <nav class="nav-menu">
@@ -90,7 +94,7 @@
   </header>
 
   <!-- Hero Section -->
-  <section class="hero" style="background-image: url('images/hero_bg.png');">
+  <section class="hero" data-bg="images/hero_bg.png">
     <div class="hero-overlay"></div>
     <div class="container">
       <div class="hero-content">
@@ -108,7 +112,7 @@
       </div>
       <div class="hero-graphic">
         <div class="hero-graphic-box">
-          <img src="images/Screenshot 2026-06-24 172118.png" alt="Safetech FR Coverall on model" class="hero-graphic-img" width="380" height="475" loading="eager">
+          <img src="images/Screenshot 2026-06-24 172118.png" alt="Safetech FR Coverall on model" class="hero-graphic-img img-smooth" width="380" height="475" decoding="async" fetchpriority="high">
         </div>
       </div>
     </div>
@@ -123,8 +127,8 @@
             <span class="about-badge-num">15+</span>
             <span class="about-badge-text">Years of Safety</span>
           </div>
-          <img src="images/FR COVERALL (orange).jpg" alt="Safetech FR Coverall — Orange" class="about-img-main" width="480" height="560" loading="lazy">
-          <img src="images/FR winter Jacket.jpg" alt="Safetech FR Winter Jacket" class="about-img-accent" width="280" height="280" loading="lazy">
+          <img src="images/FR COVERALL (orange).jpg" alt="Safetech FR Coverall — Orange" class="about-img-main img-smooth" width="480" height="560" loading="lazy" decoding="async">
+          <img src="images/FR winter Jacket.jpg" alt="Safetech FR Winter Jacket" class="about-img-accent img-smooth" width="280" height="280" loading="lazy" decoding="async">
         </div>
         <div class="about-content">
           <span class="subtitle-badge">About SAFETECH WORKWEAR</span>
@@ -228,7 +232,7 @@
       <div class="products-list">
         <div class="product-card" data-product-id="fr-coverall">
           <div class="product-image-box product-clickable">
-            <img src="images/FR COVERALL (orange).jpg" alt="FR Coverall — Orange" class="product-image" width="220" height="220" loading="lazy">
+            <img src="images/FR COVERALL (orange).jpg" alt="FR Coverall — Orange" class="product-image img-smooth" width="220" height="220" loading="lazy" decoding="async">
             <span class="product-overlay">Orange</span>
           </div>
           <div class="product-body">
@@ -254,7 +258,7 @@
       <div class="products-list">
         <div class="product-card" data-product-id="fr-shirt-trouser">
           <div class="product-image-box product-clickable">
-            <img src="images/FR  Shirt and Trouser (navy blue).jpg" alt="FR Shirt and Trouser — Navy Blue" class="product-image" width="220" height="220" loading="lazy">
+            <img src="images/FR  Shirt and Trouser (navy blue).jpg" alt="FR Shirt and Trouser — Navy Blue" class="product-image img-smooth" width="220" height="220" loading="lazy" decoding="async">
             <span class="product-overlay">Navy Blue</span>
           </div>
           <div class="product-body">
@@ -271,7 +275,7 @@
         </div>
         <div class="product-card" data-product-id="fr-winter-jacket">
           <div class="product-image-box product-clickable">
-            <img src="images/FR winter Jacket.jpg" alt="FR Winter Jacket — Navy Blue" class="product-image" width="220" height="220" loading="lazy">
+            <img src="images/FR winter Jacket.jpg" alt="FR Winter Jacket — Navy Blue" class="product-image img-smooth" width="220" height="220" loading="lazy" decoding="async">
             <span class="product-overlay">Navy Blue</span>
           </div>
           <div class="product-body">
@@ -293,7 +297,7 @@
       <div class="products-list">
         <div class="product-card" data-product-id="cotton-shirt-trouser">
           <div class="product-image-box product-clickable">
-            <img src="images/100%25 cotton shirt and trouser (khaki).jpg" alt="Cotton Shirt &amp; Trouser — Khaki" class="product-image" width="220" height="220" loading="lazy">
+            <img src="images/100%25 cotton shirt and trouser (khaki).jpg" alt="Cotton Shirt &amp; Trouser — Khaki" class="product-image img-smooth" width="220" height="220" loading="lazy" decoding="async">
             <span class="product-overlay">Khaki</span>
           </div>
           <div class="product-body">
@@ -709,7 +713,7 @@
       </button>
       <div class="product-modal-grid">
         <div class="product-modal-image-wrap">
-          <img src="" alt="" class="product-modal-image" id="productModalImage">
+          <img src="" alt="" class="product-modal-image img-smooth" id="productModalImage" decoding="async">
           <span class="product-overlay product-modal-overlay" id="productModalOverlay"></span>
         </div>
         <div class="product-modal-info">
@@ -741,7 +745,7 @@
         <!-- Col 1 -->
         <div class="footer-brand">
           <a href="#home" class="logo-img-wrapper">
-            <img src="images/logo.png" alt="SAFETECH WORKWEAR Logo" class="footer-logo-img">
+            <img src="images/logo.png" alt="SAFETECH WORKWEAR Logo" class="footer-logo-img img-smooth" width="160" height="42" loading="lazy" decoding="async">
           </a>
           <p class="footer-brand-desc">Premium manufacturer and distributor of highly secure industrial protective
             safety uniforms and wear for operations worldwide.</p>

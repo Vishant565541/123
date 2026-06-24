@@ -3,6 +3,7 @@
 let activeProductCard = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  initImagePerformance();
   initNavigation();
   initTestimonials();
   initContactForm();
@@ -12,6 +13,72 @@ document.addEventListener('DOMContentLoaded', () => {
   initColorSwitchers();
   initProductModal();
 });
+
+/* ==========================================================================
+   Fast Image Loading — smooth reveal, lazy bg, preload swatches
+   ========================================================================== */
+const imageCache = new Map();
+
+function preloadImage(src) {
+  if (!src || imageCache.has(src)) {
+    return imageCache.get(src) || Promise.resolve();
+  }
+
+  const promise = new Promise((resolve, reject) => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+
+  imageCache.set(src, promise);
+  return promise;
+}
+
+function markImageLoaded(img) {
+  img.classList.add('is-loaded');
+  img.classList.remove('is-error');
+}
+
+function initImagePerformance() {
+  document.querySelectorAll('img.img-smooth').forEach((img) => {
+    if (img.complete && img.naturalWidth > 0) {
+      markImageLoaded(img);
+    } else {
+      img.addEventListener('load', () => markImageLoaded(img), { once: true });
+      img.addEventListener('error', () => {
+        img.classList.add('is-error', 'is-loaded');
+      }, { once: true });
+    }
+  });
+
+  const hero = document.querySelector('.hero[data-bg]');
+  if (hero) {
+    const loadHeroBg = () => {
+      const bgUrl = hero.getAttribute('data-bg');
+      if (!bgUrl) return;
+      preloadImage(bgUrl)
+        .then(() => {
+          hero.style.backgroundImage = `url('${bgUrl}')`;
+        })
+        .catch(() => {});
+    };
+
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadHeroBg, { timeout: 2000 });
+    } else {
+      setTimeout(loadHeroBg, 300);
+    }
+  }
+
+  document.querySelectorAll('.color-btn[data-img]').forEach((btn) => {
+    const warm = () => preloadImage(btn.getAttribute('data-img'));
+    btn.addEventListener('mouseenter', warm, { passive: true });
+    btn.addEventListener('focus', warm, { passive: true });
+    btn.addEventListener('touchstart', warm, { passive: true });
+  });
+}
 
 /* ==========================================================================
    Color Swatch Switcher for Products
@@ -27,15 +94,24 @@ function applyProductColor(container, btn) {
 
   const productImg = container.querySelector('.product-image, .product-modal-image');
   if (productImg) {
-    productImg.style.opacity = '0.5';
-    setTimeout(() => {
-      productImg.src = targetImgSrc;
-      const baseTitle = container.querySelector('[data-base-title]')?.getAttribute('data-base-title')
-        || container.querySelector('.product-modal-title')?.getAttribute('data-base-title')
-        || '';
-      productImg.alt = baseTitle ? `${baseTitle} — ${targetColorText}` : targetColorText;
-      productImg.style.opacity = '1';
-    }, 150);
+    productImg.classList.add('is-swapping');
+    productImg.classList.remove('is-loaded');
+
+    preloadImage(targetImgSrc)
+      .then(() => {
+        productImg.src = targetImgSrc;
+        const baseTitle = container.querySelector('[data-base-title]')?.getAttribute('data-base-title')
+          || container.querySelector('.product-modal-title')?.getAttribute('data-base-title')
+          || '';
+        productImg.alt = baseTitle ? `${baseTitle} — ${targetColorText}` : targetColorText;
+        markImageLoaded(productImg);
+        productImg.classList.remove('is-swapping');
+      })
+      .catch(() => {
+        productImg.src = targetImgSrc;
+        productImg.classList.remove('is-swapping');
+        productImg.classList.add('is-loaded');
+      });
   }
 
   const overlayText = container.querySelector('.product-overlay, .product-modal-overlay');
@@ -100,6 +176,12 @@ function initProductModal() {
 
     modalImage.src = img.src;
     modalImage.alt = img.alt;
+    if (img.complete && img.naturalWidth > 0) {
+      markImageLoaded(modalImage);
+    } else {
+      modalImage.classList.remove('is-loaded');
+      modalImage.addEventListener('load', () => markImageLoaded(modalImage), { once: true });
+    }
     modalOverlay.textContent = overlay.textContent;
 
     const baseTitle = title.getAttribute('data-base-title') || title.textContent.split(' — ')[0];
@@ -372,39 +454,53 @@ function initScrollTop() {
 function initGSAPAnimations() {
   if (typeof gsap === 'undefined') return;
 
-  // Register ScrollTrigger plugin
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+  if (prefersReducedMotion) {
+    document.querySelectorAll('.img-smooth').forEach(markImageLoaded);
+    return;
+  }
+
   gsap.registerPlugin(ScrollTrigger);
 
-  // Hero Section Anim
+  const heroDuration = isMobile ? 0.5 : 0.8;
+  const cardDuration = isMobile ? 0.5 : 0.8;
+  const cardStagger = isMobile ? 0.08 : 0.15;
+
+  document.querySelectorAll('.why-card, .product-card, .industry-card').forEach((el) => {
+    el.classList.add('is-animating');
+  });
+
   const tlHero = gsap.timeline();
   tlHero.from('.hero-badge', {
-    y: 30,
+    y: isMobile ? 20 : 30,
     opacity: 0,
-    duration: 0.8,
+    duration: heroDuration,
     ease: 'power3.out'
   })
   .from('.hero-title', {
-    y: 40,
+    y: isMobile ? 25 : 40,
     opacity: 0,
-    duration: 1,
+    duration: heroDuration + 0.2,
     ease: 'power3.out'
   }, '-=0.5')
   .from('.hero-subtitle', {
-    y: 30,
+    y: isMobile ? 20 : 30,
     opacity: 0,
-    duration: 0.8,
+    duration: heroDuration,
     ease: 'power3.out'
   }, '-=0.6')
   .from('.hero-actions', {
-    y: 30,
+    y: isMobile ? 20 : 30,
     opacity: 0,
-    duration: 0.8,
+    duration: heroDuration,
     ease: 'power3.out'
   }, '-=0.6')
   .from('.hero-graphic-box', {
-    scale: 0.9,
+    scale: isMobile ? 0.95 : 0.9,
     opacity: 0,
-    duration: 1,
+    duration: heroDuration + 0.2,
     ease: 'back.out(1.4)'
   }, '-=0.8');
 
@@ -417,14 +513,17 @@ function initGSAPAnimations() {
       start: 'top 80%',
       toggleActions: 'play none none none'
     },
-    y: 50,
+    y: isMobile ? 30 : 50,
     opacity: 0,
-    duration: 0.8,
-    stagger: 0.15,
+    duration: cardDuration,
+    stagger: cardStagger,
     ease: 'power2.out',
     onComplete: function() {
       gsap.set('.why-card', { clearProps: 'y,opacity' });
-      document.querySelectorAll('.why-card').forEach(card => card.classList.add('animated'));
+      document.querySelectorAll('.why-card').forEach(card => {
+        card.classList.add('animated');
+        card.classList.remove('is-animating');
+      });
     }
   });
 
@@ -436,14 +535,17 @@ function initGSAPAnimations() {
         start: 'top 85%',
         toggleActions: 'play none none none'
       },
-      y: 60,
+      y: isMobile ? 35 : 60,
       opacity: 0,
-      duration: 0.9,
-      stagger: 0.18,
+      duration: cardDuration + 0.1,
+      stagger: isMobile ? 0.1 : 0.18,
       ease: 'power2.out',
       onComplete: function() {
         gsap.set(grid.querySelectorAll('.product-card'), { clearProps: 'y,opacity' });
-        grid.querySelectorAll('.product-card').forEach(card => card.classList.add('animated'));
+        grid.querySelectorAll('.product-card').forEach(card => {
+          card.classList.add('animated');
+          card.classList.remove('is-animating');
+        });
       }
     });
   });
@@ -455,14 +557,17 @@ function initGSAPAnimations() {
       start: 'top 80%',
       toggleActions: 'play none none none'
     },
-    scale: 0.9,
+    scale: isMobile ? 0.95 : 0.9,
     opacity: 0,
-    duration: 0.8,
-    stagger: 0.12,
+    duration: cardDuration,
+    stagger: isMobile ? 0.08 : 0.12,
     ease: 'power2.out',
     onComplete: function() {
       gsap.set('.industry-card', { clearProps: 'scale,opacity' });
-      document.querySelectorAll('.industry-card').forEach(card => card.classList.add('animated'));
+      document.querySelectorAll('.industry-card').forEach(card => {
+        card.classList.add('animated');
+        card.classList.remove('is-animating');
+      });
     }
   });
 

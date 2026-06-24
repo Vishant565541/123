@@ -76,6 +76,42 @@ img {
   display: block;
 }
 
+/* Fast, smooth image loading */
+.img-smooth {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.img-smooth.is-loaded {
+  opacity: 1;
+}
+
+.img-smooth.is-error {
+  opacity: 0.6;
+}
+
+/* Reserve space — prevents layout shift while images load */
+.about-img-main {
+  aspect-ratio: 6 / 7;
+}
+
+.hero-graphic-box {
+  contain: layout style paint;
+}
+
+/* Off-screen sections render faster on mobile */
+.about,
+.why,
+.products,
+.industries,
+.mv,
+.quality,
+.testimonials,
+.contact {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
 /* Utility Layouts */
 .container {
   width: 100%;
@@ -84,8 +120,10 @@ img {
   padding: 0 2rem;
 }
 
-/* Performance: will-change for animated elements */
-.why-card, .product-card, .industry-card {
+/* Performance: will-change only while animating (removed after GSAP completes) */
+.why-card.is-animating,
+.product-card.is-animating,
+.industry-card.is-animating {
   will-change: transform;
 }
 
@@ -371,11 +409,13 @@ header .container {
   min-height: 100vh;
   display: flex;
   align-items: center;
+  background-color: var(--primary-dark);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   color: var(--white);
   padding: 8rem 0 4rem;
+  transition: background-image 0.5s ease;
 }
 
 .hero-overlay {
@@ -720,6 +760,7 @@ header .container {
   min-width: 220px;
   height: auto;
   min-height: 200px;
+  aspect-ratio: 1 / 1;
   position: relative;
   overflow: hidden;
   background-color: #f4f6f8;
@@ -737,7 +778,12 @@ header .container {
   object-fit: contain;
   object-position: center;
   padding: 0.75rem;
-  transition: opacity 0.25s ease, transform 0.35s ease;
+  transition: opacity 0.3s ease, transform 0.35s ease;
+  will-change: opacity;
+}
+
+.product-image.is-swapping {
+  opacity: 0.4;
 }
 
 .product-card:hover .product-image {
@@ -959,7 +1005,11 @@ header .container {
   max-width: 100%;
   max-height: 420px;
   object-fit: contain;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.3s ease;
+}
+
+.product-modal-image.is-swapping {
+  opacity: 0.4;
 }
 
 .product-modal-info {
