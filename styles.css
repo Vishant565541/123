@@ -1727,7 +1727,7 @@ footer {
   .hero-badge    { justify-content: center; }
   .hero-actions  { justify-content: center; }
 
-  .hero-graphic  { order: -1; }
+  .hero-graphic  { order: 1; }
 
   .hero-graphic-box {
     max-width: 340px;
