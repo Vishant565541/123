@@ -1,5 +1,7 @@
 // SAFETECH WORKWEAR - Custom Premium Interactions & Animations
 
+let activeProductCard = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initTestimonials();
@@ -7,7 +9,136 @@ document.addEventListener('DOMContentLoaded', () => {
   initWhatsAppWidget();
   initScrollTop();
   initGSAPAnimations();
+  initColorSwitchers();
+  initProductModal();
 });
+
+/* ==========================================================================
+   Color Swatch Switcher for Products
+   ========================================================================== */
+function applyProductColor(container, btn) {
+  const targetImgSrc = btn.getAttribute('data-img');
+  const targetColorText = btn.getAttribute('data-color');
+  if (!targetImgSrc || !targetColorText) return;
+
+  const colorBtns = container.querySelectorAll('.color-btn');
+  colorBtns.forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const productImg = container.querySelector('.product-image, .product-modal-image');
+  if (productImg) {
+    productImg.style.opacity = '0.5';
+    setTimeout(() => {
+      productImg.src = targetImgSrc;
+      const baseTitle = container.querySelector('[data-base-title]')?.getAttribute('data-base-title')
+        || container.querySelector('.product-modal-title')?.getAttribute('data-base-title')
+        || '';
+      productImg.alt = baseTitle ? `${baseTitle} — ${targetColorText}` : targetColorText;
+      productImg.style.opacity = '1';
+    }, 150);
+  }
+
+  const overlayText = container.querySelector('.product-overlay, .product-modal-overlay');
+  if (overlayText) overlayText.textContent = targetColorText;
+
+  const colorNameEl = container.querySelector('.product-color-name');
+  if (colorNameEl) colorNameEl.textContent = targetColorText;
+
+  const modalTitle = container.querySelector('.product-modal-title');
+  if (modalTitle) {
+    const base = modalTitle.getAttribute('data-base-title') || modalTitle.textContent.split(' — ')[0];
+    modalTitle.innerHTML = `${base} — <span class="product-color-name">${targetColorText}</span>`;
+  }
+}
+
+function initColorSwitchers() {
+  document.querySelectorAll('.product-card .color-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const productCard = btn.closest('.product-card');
+      if (!productCard) return;
+      applyProductColor(productCard, btn);
+
+      const modal = document.getElementById('productModal');
+      if (modal?.classList.contains('show') && activeProductCard === productCard) {
+        const modalBtn = modal.querySelector(`.color-btn[data-color="${btn.getAttribute('data-color')}"]`);
+        if (modalBtn) applyProductColor(modal, modalBtn);
+      }
+    });
+  });
+}
+
+/* ==========================================================================
+   Product Detail Modal
+   ========================================================================== */
+function initProductModal() {
+  const modal = document.getElementById('productModal');
+  const closeBtn = document.getElementById('closeProductModal');
+  const modalImage = document.getElementById('productModalImage');
+  const modalOverlay = document.getElementById('productModalOverlay');
+  const modalTitle = document.getElementById('productModalTitle');
+  const modalDesc = document.getElementById('productModalDesc');
+  const modalSwatches = document.getElementById('productModalSwatches');
+  const modalQuote = document.getElementById('productModalQuote');
+
+  if (!modal) return;
+
+  function closeModal() {
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    activeProductCard = null;
+  }
+
+  function openModal(card) {
+    activeProductCard = card;
+    const img = card.querySelector('.product-image');
+    const overlay = card.querySelector('.product-overlay');
+    const title = card.querySelector('.product-title');
+    const desc = card.querySelector('.product-desc');
+    const swatches = card.querySelector('.color-swatches');
+
+    modalImage.src = img.src;
+    modalImage.alt = img.alt;
+    modalOverlay.textContent = overlay.textContent;
+
+    const baseTitle = title.getAttribute('data-base-title') || title.textContent.split(' — ')[0];
+    const colorName = card.querySelector('.product-color-name')?.textContent || overlay.textContent;
+    modalTitle.setAttribute('data-base-title', baseTitle);
+    modalTitle.innerHTML = `${baseTitle} — <span class="product-color-name">${colorName}</span>`;
+    modalDesc.textContent = desc.textContent;
+
+    modalSwatches.innerHTML = swatches.innerHTML;
+    modalSwatches.querySelectorAll('.color-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        applyProductColor(modal, btn);
+        const matchingBtn = activeProductCard.querySelector(`.color-btn[data-color="${btn.getAttribute('data-color')}"]`);
+        if (matchingBtn) applyProductColor(activeProductCard, matchingBtn);
+      });
+    });
+
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  document.querySelectorAll('.product-clickable').forEach(box => {
+    box.addEventListener('click', () => {
+      const card = box.closest('.product-card');
+      if (card) openModal(card);
+    });
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+  modalQuote.addEventListener('click', closeModal);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
+  });
+}
 
 /* ==========================================================================
    Navigation (Header scroll effect, mobile menu & active links)
@@ -297,22 +428,24 @@ function initGSAPAnimations() {
     }
   });
 
-  // Expertise (Products) Cards
-  gsap.from('.product-card', {
-    scrollTrigger: {
-      trigger: '.products-grid',
-      start: 'top 80%',
-      toggleActions: 'play none none none'
-    },
-    y: 60,
-    opacity: 0,
-    duration: 0.9,
-    stagger: 0.18,
-    ease: 'power2.out',
-    onComplete: function() {
-      gsap.set('.product-card', { clearProps: 'y,opacity' });
-      document.querySelectorAll('.product-card').forEach(card => card.classList.add('animated'));
-    }
+  // Expertise (Products) Cards (Multiple lists support)
+  gsap.utils.toArray('.products-list').forEach((grid) => {
+    gsap.from(grid.querySelectorAll('.product-card'), {
+      scrollTrigger: {
+        trigger: grid,
+        start: 'top 85%',
+        toggleActions: 'play none none none'
+      },
+      y: 60,
+      opacity: 0,
+      duration: 0.9,
+      stagger: 0.18,
+      ease: 'power2.out',
+      onComplete: function() {
+        gsap.set(grid.querySelectorAll('.product-card'), { clearProps: 'y,opacity' });
+        grid.querySelectorAll('.product-card').forEach(card => card.classList.add('animated'));
+      }
+    });
   });
 
   // Industries Cards
