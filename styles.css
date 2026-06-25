@@ -329,7 +329,7 @@ header .container {
   align-items: center;
   transition: var(--transition);
   background-color: var(--white);
-  padding: 8px 20px;
+  padding: 6px 16px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -339,7 +339,7 @@ header .container {
 }
 
 .header-logo-img {
-  height: 48px;
+  height: 68px;
   width: auto;
   display: block;
   transition: var(--transition);
@@ -470,7 +470,7 @@ header .container {
 }
 
 .hero-title {
-  font-size: 4.25rem;
+  font-size: 3.25rem;
   line-height: 1.1;
   font-weight: 900;
   margin-bottom: 1.75rem;
@@ -2046,9 +2046,11 @@ footer {
     gap: 2.5rem;
   }
 
-  /* ── Logo ── */
-  .header-logo-img { height: 40px; }
-  .logo-img-wrapper { padding: 6px 14px; }
+  /* ── Logo ── bold & prominent on tablet/mobile navbar ── */
+  header { padding: 1.25rem 0; }
+  header.scrolled { padding: 1rem 0; }
+  .header-logo-img { height: 80px; }
+  .logo-img-wrapper { padding: 10px 20px; max-height: 102px; overflow: hidden; }
 }
 
 /* 768px — mobile landscape */
@@ -2157,6 +2159,12 @@ footer {
 
   .container { padding: 0 1rem; }
 
+  /* Keep logo bold & prominent on small phones */
+  header { padding: 1.1rem 0; }
+  header.scrolled { padding: 0.9rem 0; }
+  .header-logo-img  { height: 72px; }
+  .logo-img-wrapper { padding: 9px 16px; max-height: 92px; overflow: hidden; }
+
   .hero-title    { font-size: 2rem; }
   .hero-subtitle { font-size: 1rem; }
   .section-title { font-size: 1.9rem; }
@@ -2208,9 +2216,9 @@ footer {
   .footer-socials { justify-content: center; }
   .footer-brand   { text-align: center; }
 
-  /* Logo wrapper smaller */
-  .header-logo-img  { height: 34px; }
-  .logo-img-wrapper { padding: 5px 10px; }
+  /* Logo — bold & sharp on the smallest mobile navbar */
+  .header-logo-img  { height: 68px; }
+  .logo-img-wrapper { padding: 8px 14px; max-height: 86px; overflow: hidden; }
 
   /* Section header */
   .section-header { max-width: 100%; }
