@@ -1958,7 +1958,7 @@ footer {
     background-color: var(--primary-dark);
     flex-direction: column;
     align-items: flex-start;
-    padding: 7rem 2.5rem 3rem;
+    padding: 10rem 2.5rem 3rem;
     gap: 1.75rem;
     box-shadow: -10px 0 40px rgba(0,0,0,0.4);
     transition: right 0.38s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -2046,14 +2046,47 @@ footer {
     gap: 2.5rem;
   }
 
-  /* ── Logo ── bold & prominent on tablet/mobile navbar ── */
-  header { padding: 1.25rem 0; }
-  header.scrolled { padding: 1rem 0; }
-  .header-logo-img { height: 80px; }
-  .logo-img-wrapper { padding: 10px 20px; max-height: 102px; overflow: hidden; }
+  /* ── Mobile Header ── logo full width top, button below ── */
+  header {
+    padding: 0 !important;
+    height: auto;
+    min-height: unset;
+  }
+  header .container {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    gap: 0;
+  }
+  /* Logo row — full width, white background */
+  .logo-img-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 0;
+    max-height: none;
+    overflow: visible;
+    box-shadow: none;
+    background-color: #ffffff;
+  }
+  .header-logo-img {
+    height: 64px;
+    width: auto;
+  }
+  /* Button row — full width, dark navy background */
+  .mobile-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px 20px;
+    background-color: var(--primary);
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
 }
 
-/* 768px — mobile landscape */
 @media (max-width: 768px) {
   html { font-size: 15px; }
 
@@ -2159,11 +2192,33 @@ footer {
 
   .container { padding: 0 1rem; }
 
-  /* Keep logo bold & prominent on small phones */
-  header { padding: 1.1rem 0; }
-  header.scrolled { padding: 0.9rem 0; }
-  .header-logo-img  { height: 72px; }
-  .logo-img-wrapper { padding: 9px 16px; max-height: 92px; overflow: hidden; }
+  /* ── Mobile Header 480px ── logo full width top, button below ── */
+  header {
+    padding: 0 !important;
+    height: auto;
+    min-height: unset;
+  }
+  header .container {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+  }
+  .logo-img-wrapper {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 16px;
+    border-radius: 0;
+    box-shadow: none;
+    background-color: #ffffff;
+  }
+  .header-logo-img { height: 58px; width: auto; }
+  .mobile-toggle {
+    width: 100%;
+    justify-content: flex-end;
+    padding: 8px 16px;
+    background-color: var(--primary);
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
 
   .hero-title    { font-size: 2rem; }
   .hero-subtitle { font-size: 1rem; }
@@ -2216,9 +2271,7 @@ footer {
   .footer-socials { justify-content: center; }
   .footer-brand   { text-align: center; }
 
-  /* Logo — bold & sharp on the smallest mobile navbar */
-  .header-logo-img  { height: 68px; }
-  .logo-img-wrapper { padding: 8px 14px; max-height: 86px; overflow: hidden; }
+  /* Logo size already set above — no duplicate needed */
 
   /* Section header */
   .section-header { max-width: 100%; }
