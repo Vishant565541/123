@@ -41,8 +41,9 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
-  overflow-x: hidden;
   scroll-padding-top: 130px;
+  overscroll-behavior: none;
+  /* overflow-x hidden only on body — having it on both html AND body causes mobile WebKit scroll-chain issues */
 }
 
 body {
@@ -51,7 +52,9 @@ body {
   background-color: var(--white);
   line-height: 1.6;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
   -webkit-font-smoothing: antialiased;
+  -webkit-overflow-scrolling: touch;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -100,17 +103,21 @@ img {
   contain: layout style paint;
 }
 
-/* Off-screen sections render faster on mobile */
-.about,
-.why,
-.products,
-.industries,
-.mv,
-.quality,
-.testimonials,
-.contact {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 600px;
+/* Off-screen sections render faster on mobile — only on desktop where layout is stable.
+   On mobile, content-visibility: auto causes scroll jumps because the intrinsic size estimate
+   doesn't match the actual rendered height, leading to sudden layout shifts. */
+@media (min-width: 769px) {
+  .about,
+  .why,
+  .products,
+  .industries,
+  .mv,
+  .quality,
+  .testimonials,
+  .contact {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
+  }
 }
 
 /* Utility Layouts */
@@ -408,6 +415,7 @@ header .container {
 .hero {
   position: relative;
   min-height: 100vh;
+  min-height: 100dvh; /* Modern browsers: accounts for mobile address bar to prevent scroll jump */
   display: flex;
   align-items: center;
   background-color: var(--primary-dark);
@@ -1954,8 +1962,9 @@ footer {
     top: 0;
     right: -100%;
     width: min(320px, 85vw);
-    height: 100vh;
     height: 100dvh;
+    height: 100vh; /* fallback for older browsers */
+    height: 100dvh; /* modern: prevents jump when mobile address bar hides/shows */
     background-color: var(--primary-dark);
     flex-direction: column;
     align-items: flex-start;
@@ -1998,6 +2007,7 @@ footer {
   /* ── Hero ── */
   .hero {
     min-height: auto;
+    min-height: unset; /* override 100dvh on mobile — auto height prevents scroll jump */
     padding: 9rem 0 5rem;
   }
 
@@ -2089,7 +2099,11 @@ footer {
 }
 
 @media (max-width: 768px) {
-  html { font-size: 15px; }
+  html {
+    font-size: 15px;
+    /* Dynamic scroll-padding for variable mobile header height */
+    scroll-padding-top: 150px;
+  }
 
   .section { padding: 4rem 0; }
   .container { padding: 0 1.25rem; }

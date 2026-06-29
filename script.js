@@ -232,7 +232,9 @@ function initNavigation() {
   const navLinks = document.querySelectorAll('.nav-link');
   const sections = document.querySelectorAll('section, header');
 
-  // Sticky header on scroll
+  let savedScrollY = 0; // Track scroll position to restore after menu close
+
+  // Sticky header on scroll — passive for better mobile perf
   window.addEventListener('scroll', () => {
     if (window.scrollY > 50) {
       header.classList.add('scrolled');
@@ -244,7 +246,6 @@ function initNavigation() {
     let current = '';
     sections.forEach(section => {
       const sectionTop = section.offsetTop;
-      const sectionHeight = section.clientHeight;
       if (window.scrollY >= (sectionTop - 150)) {
         current = section.getAttribute('id') || '';
       }
@@ -256,20 +257,64 @@ function initNavigation() {
         link.classList.add('active');
       }
     });
-  });
+  }, { passive: true });
+
+  // Lock body scroll when mobile menu opens (prevents scroll jump)
+  function lockBodyScroll() {
+    savedScrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${savedScrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+  }
+
+  // Unlock body scroll and restore exact position (no jump)
+  function unlockBodyScroll() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, savedScrollY);
+  }
 
   // Mobile menu toggle
   mobileToggle.addEventListener('click', () => {
+    const willOpen = !navMenu.classList.contains('active');
     navMenu.classList.toggle('active');
-    const isMenuOpen = navMenu.classList.contains('active');
-    mobileToggle.innerHTML = isMenuOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+
+    if (willOpen) {
+      lockBodyScroll();
+    } else {
+      unlockBodyScroll();
+    }
+
+    mobileToggle.innerHTML = willOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
   });
 
-  // Close mobile menu when clicking links
+  // Close mobile menu when clicking links — smooth scroll to section without jump
   navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      navMenu.classList.remove('active');
-      mobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
+    link.addEventListener('click', (e) => {
+      const isMenuOpen = navMenu.classList.contains('active');
+      if (isMenuOpen) {
+        e.preventDefault();
+        navMenu.classList.remove('active');
+        mobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        unlockBodyScroll();
+
+        // Scroll to the target section after body is unlocked
+        const targetId = link.getAttribute('href');
+        if (targetId && targetId.startsWith('#')) {
+          const targetEl = document.querySelector(targetId);
+          if (targetEl) {
+            // Small delay to let DOM settle after unlocking body
+            requestAnimationFrame(() => {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+          }
+        }
+      }
     });
   });
 }
