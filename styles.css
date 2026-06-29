@@ -46,6 +46,13 @@ html {
   /* overflow-x hidden only on body — having it on both html AND body causes mobile WebKit scroll-chain issues */
 }
 
+/* Prevent iOS Safari auto-scroll: force touch-action on key containers */
+@supports (-webkit-touch-callout: none) {
+  body {
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
 body {
   font-family: var(--font-body);
   color: var(--dark-gray);
@@ -2107,6 +2114,11 @@ footer {
     /* Dynamic scroll-padding for variable mobile header height */
     scroll-padding-top: 150px;
   }
+  
+  /* Prevent iOS scroll jump/reflow by disabling animations that change layout/transform */
+  .hero-graphic-box { animation: none !important; }
+  .whatsapp-float-btn { animation: none !important; }
+  .hero-badge-dot { animation: none !important; }
 
   .section { padding: 4rem 0; }
   .container { padding: 0 1.25rem; }
