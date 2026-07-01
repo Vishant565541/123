@@ -45,6 +45,12 @@ html {
   /* overflow-x hidden only on body — having it on both html AND body causes mobile WebKit scroll-chain issues */
 }
 
+@media (max-width: 991px) {
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Prevent iOS Safari auto-scroll: force touch-action on key containers */
 @supports (-webkit-touch-callout: none) {
   body {

@@ -508,6 +508,9 @@ function initGSAPAnimations() {
   }
 
   gsap.registerPlugin(ScrollTrigger);
+  
+  // Prevent iOS scroll jump when the address bar resizes the viewport height
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
   const heroDuration = isMobile ? 0.5 : 0.8;
   const cardDuration = isMobile ? 0.5 : 0.8;
