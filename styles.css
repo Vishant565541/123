@@ -855,24 +855,28 @@ header .container {
 }
 
 .color-btn {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: 2px solid var(--white);
   box-shadow: 0 0 0 1px var(--border-color);
   cursor: pointer;
   transition: all 0.2s ease;
   padding: 0;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
 .color-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 0 1px var(--text-light);
+  transform: scale(1.15);
+  box-shadow: 0 0 0 1px #94A3B8;
 }
 
 .color-btn.active {
-  box-shadow: 0 0 0 2px var(--primary);
-  transform: scale(1.1);
+  border: 2px solid var(--white);
+  box-shadow: 0 0 0 2px var(--secondary);
+  transform: scale(1.15);
+  outline: none;
 }
 
 
